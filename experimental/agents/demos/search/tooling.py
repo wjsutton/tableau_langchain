@@ -48,4 +48,4 @@ datasource_search = initialize_datasource_search()
 datasource_switch = initialize_datasource_switch()
 
 # List of tools used to build the state graph and for binding them to nodes
-tools = [tableau_metrics, analyze_datasource, datasource_search, datasource_switch]
+tools = [analyze_datasource, datasource_search, datasource_switch]
