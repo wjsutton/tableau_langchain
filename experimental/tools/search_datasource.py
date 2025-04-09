@@ -57,8 +57,10 @@ def initialize_datasource_search():
                     tableau_api=os.getenv('TABLEAU_API_VERSION', '3.21'),
                     scopes=["tableau:content:read", "tableau:viz_data_service:read"]
                 )
+
+                token = auth_token['credentials']['token']
                 all_datasources = get_datasources_metadata(
-                    api_key=auth_token,
+                    api_key=token,
                     domain=os.getenv('TABLEAU_DOMAIN')
                 )
                 formatted_docs = format_datasources_for_rag(all_datasources)
