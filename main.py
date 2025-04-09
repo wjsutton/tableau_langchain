@@ -1,5 +1,6 @@
 import os
 import asyncio
+import shutil
 
 from dotenv import load_dotenv
 
@@ -9,6 +10,18 @@ from experimental.agents.utils.search_agent_utils import stream_graph_updates, _
 from experimental.agents.shared_state import set_datasource_luid, get_datasource_luid
 
 from langchain_tableau.utilities.auth import jwt_connected_app
+
+from experimental.utilities.setup_local_vector_db import build_tableau_vector_db
+
+# Path to vector database
+folder_path = 'vector_db'
+
+# Check if the folder exists
+if os.path.exists(folder_path):
+    # Delete the folder and its contents
+    shutil.rmtree(folder_path)
+
+build_tableau_vector_db()
 
 async def main():
     """
