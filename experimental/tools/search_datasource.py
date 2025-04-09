@@ -37,6 +37,18 @@ def initialize_datasource_search():
         load_dotenv()
         site_name = os.getenv('SITE_NAME', 'tableau')
         collection_name = f"{site_name}_tableau_datasource_vector_search"
+
+        # Read Tableau authentication config from environment
+        tableau_server   = os.getenv('TABLEAU_DOMAIN')   
+        tableau_site     = os.getenv('SITE_NAME')        
+        tableau_user     = os.getenv('TABLEAU_USER')     
+
+        # Credentials for generating auth token via connnected app
+        tableau_jwt_client_id    = os.getenv('TABLEAU_JWT_CLIENT_ID')
+        tableau_jwt_secret_id    = os.getenv('TABLEAU_JWT_SECRET_ID')
+        tableau_jwt_secret = os.getenv('TABLEAU_JWT_SECRET')
+        tableau_api_version  = os.getenv('TABLEAU_API_VERSION') 
+
         
         # Perform a vector search on datasource metadata
         results: Dict[str, Any] = query_datasources_vector_db(
@@ -50,14 +62,13 @@ def initialize_datasource_search():
         if results is None:
             try:
                 auth_token = generate_tableau_auth_token(
-                    jwt_client_id=os.getenv('TABLEAU_JWT_CLIENT_ID'),
-                    jwt_secret_id=os.getenv('TABLEAU_JWT_SECRET_ID'),
-                    jwt_secret=os.getenv('TABLEAU_JWT_SECRET'),
-                    tableau_domain=os.getenv('TABLEAU_DOMAIN'),
-                    tableau_site=os.getenv('SITE_NAME'),
-                    tableau_user=os.getenv('TABLEAU_USER'),
-                    tableau_api=os.getenv('TABLEAU_API_VERSION', '3.21'),
-                    scopes=["tableau:content:read", "tableau:viz_data_service:read"]
+                    jwt_client_id=tableau_jwt_client_id,
+                    jwt_secret_id=tableau_jwt_secret_id,
+                    jwt_secret=tableau_jwt_secret,
+                    tableau_server=tableau_server,
+                    tableau_site=tableau_site,
+                    tableau_user=tableau_user,
+                    tableau_api_version=tableau_api_version
                 )
 
                 all_datasources = get_datasources_metadata(
