@@ -11,6 +11,8 @@ from experimental.utilities.search_datasources import (
     create_datasources_vector_db,
     format_datasources_for_rag
 )
+
+from experimental.utilities.setup_local_vector_db import generate_tableau_auth_token
 from experimental.utilities.metadata import get_datasources_metadata, get_data_dictionary
 from experimental.utilities.auth import jwt_connected_app
 from experimental.tools.datasource_qa import initialize_datasource_qa
@@ -47,7 +49,7 @@ def initialize_datasource_search():
         # If no vector index exists, create it and re-run the query
         if results is None:
             try:
-                auth_token = jwt_connected_app(
+                auth_token = generate_tableau_auth_token(
                     jwt_client_id=os.getenv('TABLEAU_JWT_CLIENT_ID'),
                     jwt_secret_id=os.getenv('TABLEAU_JWT_SECRET_ID'),
                     jwt_secret=os.getenv('TABLEAU_JWT_SECRET'),
@@ -58,9 +60,8 @@ def initialize_datasource_search():
                     scopes=["tableau:content:read", "tableau:viz_data_service:read"]
                 )
 
-                token = auth_token['credentials']['token']
                 all_datasources = get_datasources_metadata(
-                    api_key=token,
+                    api_key=auth_token,
                     domain=os.getenv('TABLEAU_DOMAIN')
                 )
                 formatted_docs = format_datasources_for_rag(all_datasources)
