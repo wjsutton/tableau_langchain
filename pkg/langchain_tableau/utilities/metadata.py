@@ -10,35 +10,13 @@ def get_datasource_query(luid):
       publishedDatasources(filter: {{ luid: "{luid}" }}) {{
         name
         description
-        isCertified
         owner {{
-          username
           name
-          email
-        }}
-        hasActiveWarning
-        dataQualityWarnings {{
-          authorDisplayName
-          isActive
-          isElevated
-          value
-          category
-          message
-          createdAt
-          updatedAt
-        }}
-        extractLastRefreshTime
-        extractLastIncrementalUpdateTime
-        extractLastUpdateTime
-        datasourceFilters {{
-          field {{
-            name
-            description
-          }}
         }}
         fields {{
           name
           description
+          isHidden
         }}
       }}
     }}
@@ -95,6 +73,19 @@ def get_data_dictionary(api_key: str, domain: str, datasource_luid: str) -> Dict
     response = requests.post(full_url, headers=headers, data=payload)
     response.raise_for_status()  # Raise an exception for bad status codes
 
-    dictionary = response.json()
+    json_data = response.json()['data']['publishedDatasources'][0]
 
-    return dictionary['data']
+    name = json_data.get('name')
+    description = json_data.get('description')
+    owner = json_data.get('owner', {}).get('name')
+    fields = [field for field in json_data.get('fields', []) if not field.get('isHidden')]
+
+
+    dictionary = {
+        'datasource_name': name,
+        'datasource_description': description,
+        'datasource_owner': owner,
+        'datasource_fields': fields,
+    }
+
+    return dictionary

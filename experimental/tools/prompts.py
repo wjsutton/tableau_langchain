@@ -462,17 +462,18 @@ sample_queries = [
             ]
         }
     },
-    {
-       "example": "a simple Tableau calculation",
-       "query": {
-            "fields": [
-                {
-                    "fieldCaption": "AOV",
-                    "calculation": "SUM([Profit])/COUNTD([Order ID])"
-                }
-            ]
-        }
-    },
+    # removing until we can support this with higher reliability
+    # {
+    #    "example": "a simple Tableau calculation",
+    #    "query": {
+    #         "fields": [
+    #             {
+    #                 "fieldCaption": "AOV",
+    #                 "calculation": "SUM([Profit])/COUNTD([Order ID])"
+    #             }
+    #         ]
+    #     }
+    # },
     {
         "example": "applying a set filter",
         "query": {
@@ -1055,6 +1056,7 @@ error_queries = [
 
 vds_prompt_data = {
     "task": {},
+    "meta": {},
     "data_dictionary": {},
     "data_model": {},
     "vds_schema": vds_schema,
@@ -1100,12 +1102,11 @@ fields, including those not directly related to the topics mentioned by the user
 calculations are needed, the additional fields may be useful. DO NOT HALLUCINATE FIELD NAMES
 
 Aggregations:
-ALWAYS AGGREGATE THE DATA to avoid row-level results that are too granular and not insightful. The only reason to avoid
-aggregations would be if the user expicitly asked for unaggregated or row-level results. Aggregations are a property of
-`vds_schema.Field` called "functions" and are described in `vds_schema.Functions`. For INTEGER or REAL fields, you must
-always aggregate it with one of these: SUM, AVG, MEDIAN, COUNT, COUNTD, MIN or MAX. For DATETIME or DATE fields, you must
-always aggregate it with one of these: YEAR, QUARTER, MONTH, WEEK, DAY, TRUNC_YEAR, TRUNC_QUARTER, TRUNC_MONTH, TRUNC_WEEK
-or TRUNC_DAY
+Aggregations are a property of `vds_schema.Field` called "functions" and are described in `vds_schema.Functions`.
+For INTEGER or REAL fields, you must always aggregate it with one of these: SUM, AVG, MEDIAN, COUNT, COUNTD, MIN or MAX.
+For DATETIME or DATE fields, you must always aggregate it with one of these: YEAR, QUARTER, MONTH, WEEK, DAY, TRUNC_YEAR,
+TRUNC_QUARTER, TRUNC_MONTH, TRUNC_WEEK or TRUNC_DAY. If you get an error from VDS that the response size is too large,
+try further aggregating or filtering the data to avoid row-level results that are too granular and not insightful.
 
 Sorting:
 Sort fields as often as possible to highlight data of interest in the query even if not explicitly stated by the user. That
@@ -1168,13 +1169,14 @@ use a different tool
 """
 
 vds_response = """
-This is the output of a data query tool used to fetch information via Tableau's VizQL API,
-your task is synthesizing all of this information to provide a clear, concise answer to the end user.
+This is the output of a data query tool used to fetch information via Tableau's VizQL API
+Your task is to synthesize all of this information to provide a clear, concise answer to the end user.
 
-This is the data source queried with the tool:
-{data_source}
+Data Source Name: {data_source_name}
+Description: {data_source_description}
+Maintainer: {data_source_maintainer}
 
-This is the query written to Tableau's VizQL API for the data source:
+This is the query written to Tableau's VizQL API:
 {vds_query}
 
 This is the resulting data from the query:
@@ -1184,14 +1186,10 @@ This was the user_input (question or task):
 {user_input}
 
 Based on the provided context, formulate a comprehensive and informative response to the user's query.
-Your response should be:
-1. Describe the data source used in the query unless it has been mentioned previously
-2. Translate the query to a simple query plan for end users who do not understand SQL
-3. Use the data_table to answer the user's question or task
-4. Provide insights or conclusions only when relevant to the user, don't generate additional insights
-that are unasked for unless the request asked for a detailed analysis
-5. Short and concise, if the data table is too long only return the relevant rows or a small sample
-6. Avoid generating too much redundant information unless specified by the user or they asked for detailed analysis
+Your response should:
+1. Describe the data source name, description and maintainer if this is the first interaction the user has with it
+2. Use the resulting data to answer the user's question or task
+3. Be short and concise, if the data table is too long only return the relevant rows or a small sample
 
 Your synthesized response:
 """

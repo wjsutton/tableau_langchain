@@ -175,3 +175,7 @@ chains/query_data_chain/static/dashboard_images/
 
 # temporary graph visualization is updated with changes to agent run via main.py
 graph_visualization.png
+
+# Salesforce VSCode extension
+.sfdx
+.codegenie
