@@ -8,7 +8,7 @@ from experimental.agents.tools import tableau_metrics, tavily_tool
 from experimental.agents.shared_state import get_datasource_luid
 
 # Working from experimental due to environment variable dependencies in langchain_tableau
-from experimental.tools.datasource_qa import initialize_datasource_qa
+from langchain_tableau.tools.simple_datasource_qa import initialize_simple_datasource_qa
 from experimental.tools.search_datasource import initialize_datasource_search, initialize_datasource_switch
 
 from experimental.utilities.metadata import get_data_dictionary
@@ -28,7 +28,7 @@ tooling_llm_model = os.environ['TOOLING_MODEL']
 # Function to create the datasource QA tool with a specific LUID
 def create_datasource_qa_tool(luid: str):
     """Create a datasource QA tool with the specified datasource LUID"""
-    return initialize_datasource_qa(
+    return initialize_simple_datasource_qa(
         domain=tableau_domain,
         site=tableau_site,
         jwt_client_id=tableau_jwt_client_id,

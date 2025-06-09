@@ -13,7 +13,7 @@ from experimental.utilities.search_datasources import (
 )
 from experimental.utilities.metadata import get_datasources_metadata, get_data_dictionary
 from experimental.utilities.auth import jwt_connected_app
-from experimental.tools.datasource_qa import initialize_datasource_qa
+from langchain_tableau.tools.simple_datasource_qa import initialize_simple_datasource_qa
 
 class DataSourceSearchInputs(BaseModel):
     query: str = Field(

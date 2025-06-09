@@ -179,3 +179,14 @@ graph_visualization.png
 # Salesforce VSCode extension
 .sfdx
 .codegenie
+
+
+.env
+.env_server
+.env_cloud
+.env_all
+
+workings/
+
+utilities/chat.py
+utilities/prompt.py
